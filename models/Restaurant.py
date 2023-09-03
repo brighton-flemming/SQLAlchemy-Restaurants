@@ -18,6 +18,34 @@ class Restaurant(Base):
     def __init__(self, name):
         self.name = str(name)
 
+    def get_name(self):
+        return self.name
+    
+    def get_customers(self):
+        session = Session()
+        customers = [review.customer for review in session.query(Review).filter_by(restaurant=self).all()]
+        session.close()
+        return list(set(customers))
+    
+    def get_reviews(self):
+        session  = Session()
+        reviews = session.query(Review).filter_by(restaurant=self).all()
+        session.close()
+        return reviews
+    
+    def average_star_rating(self):
+        session = Session()
+        reviews = session.query(Review).filter_by(restaurant=self).all()
+        session.close()
+
+        if not reviews:
+            return 0
+        
+        total_rating = sum(review.rating for review in reviews)
+        average_rating = total_rating / len(reviews)
+        return average_rating
+        
+
 
 class Review(Base):
     __tablename__ = 'reviews'
