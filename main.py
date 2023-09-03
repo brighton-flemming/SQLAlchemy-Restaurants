@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Customer, Reviews, Restaurant
+from models.customer import Customer
+from models.reviews import Reviews
+from models.restaurant import Restaurant
 
 
 engine = create_engine('sqlite:///reviews.db')

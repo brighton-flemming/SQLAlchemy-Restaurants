@@ -4,6 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+
+
 Base = declarative_base()
 
 class Customer(Base):
@@ -16,7 +18,7 @@ class Customer(Base):
 
 
 
-    reviews = relationship("Review", back_populates="customer")
+    reviews = relationship("Reviews", back_populates="customer")
 
     def __init__(self, first_name, family_name):
         self.first_name = first_name
@@ -24,7 +26,7 @@ class Customer(Base):
         self.reviews = []
 
     def add_review(self, restaurant_name, rating):
-        review = Review(customer=self, restaurant_name=restaurant_name, rating=rating)
+        review = Reviews(customer=self, restaurant_name=restaurant_name, rating=rating)
         self.reviews.append(review)
 
     def num_reviews(self):
@@ -59,7 +61,7 @@ class Customer(Base):
 
 
 
-class Review(Base):
+class Reviews(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key=True)

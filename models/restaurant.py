@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+
 Base = declarative_base()
 
 class Restaurant(Base):
@@ -13,7 +14,7 @@ class Restaurant(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
-    reviews = relationship("Review", back_populates="restaurant")
+    reviews = relationship("Reviews", back_populates="restaurant")
 
     def __init__(self, name):
         self.name = str(name)
@@ -23,19 +24,19 @@ class Restaurant(Base):
     
     def get_customers(self):
         session = Session()
-        customers = [review.customer for review in session.query(Review).filter_by(restaurant=self).all()]
+        customers = [review.customer for review in session.query(Reviews).filter_by(restaurant=self).all()]
         session.close()
         return list(set(customers))
     
     def get_reviews(self):
         session  = Session()
-        reviews = session.query(Review).filter_by(restaurant=self).all()
+        reviews = session.query(Reviews).filter_by(restaurant=self).all()
         session.close()
         return reviews
     
     def average_star_rating(self):
         session = Session()
-        reviews = session.query(Review).filter_by(restaurant=self).all()
+        reviews = session.query(Reviews).filter_by(restaurant=self).all()
         session.close()
 
         if not reviews:
@@ -47,7 +48,7 @@ class Restaurant(Base):
         
 
 
-class Review(Base):
+class Reviews(Base):
     __tablename__ = 'reviews'
     
 
