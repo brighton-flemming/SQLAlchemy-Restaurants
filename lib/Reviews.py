@@ -23,3 +23,16 @@ class Review(Base):
 engine = create_engine('sqlite:///reviews.db')
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
+
+
+new_review = Review(customer_name='Matthew', restaurant_name='Pizza Place', rating=5)
+session = Session()
+session.add(new_review)
+session.commit()
+
+all_reviews = session.query(Review).all()
+
+for review in all_reviews:
+    print(f"Customer: {review.customer_name}, Restauarnt: {review.restaurant_name} Rating: {review.rating}")
+
+session.close()
