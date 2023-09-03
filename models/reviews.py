@@ -8,7 +8,7 @@ from models.customer import Customer
 
 Base = declarative_base()
 
-class Reviews(Base):
+class Review(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key=True)
@@ -30,7 +30,7 @@ class Reviews(Base):
     def get_restaurant(self):
         return self.restaurant
     
-    
+
 
 engine = create_engine('sqlite:///reviews.db')
 Base.metadata.create_all(engine)
@@ -38,11 +38,11 @@ Session = sessionmaker(bind=engine)
 
 session = Session()
 customer = session.query(Customer).filter_by(id=1).first()
-new_review = Reviews(customer=customer, restaurant_name='Pizza Place', rating=5)
+new_review = Review(customer=customer, restaurant_name='Pizza Place', rating=5)
 session.add(new_review)
 session.commit()
 
-all_reviews = session.query(Reviews).all()
+all_reviews = session.query(Review).all()
 
 for review in all_reviews:
     print(f"Customer ID: {review.customer_id}, Restaurant: {review.restaurant_name}, Rating: {review.rating}")

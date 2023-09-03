@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models.customer import Customer
-from models.reviews import Reviews
+from models.reviews import Review
 from models.restaurant import Restaurant
 
 
 engine = create_engine('sqlite:///reviews.db')
 
 Customer.metadata.create_all(engine)
-Reviews.metadata.create_all(engine)
+Review.metadata.create_all(engine)
 Restaurant.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
@@ -44,7 +44,7 @@ for customer in session.query(Customer).all():
     print(f"{customer.get_full_name()}")
 
 print("\nReviews:")
-for review in session.query(Reviews).all():
+for review in session.query(Review).all():
     print(f"Customer: {review.customer.get_full_name()}, Restaurant: {review.restaurant.name}, Rating: {review.rating}")
 
 print("\nRestaurant Average Ratings:")
