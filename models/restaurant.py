@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from models.customer import Customer  # Import Customer class
+from models.customer import Customer  
 
 Base = declarative_base()
 
@@ -12,13 +12,13 @@ class Restaurant(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
-    reviews = relationship("Review", back_populates="restaurant")
+    reviews = relationship("Reviews", back_populates="restaurant")
 
     def __init__(self, name):
-        self.name = name  # No need to convert to str
+        self.name = name  
 
     def average_star_rating(self, session):
-        reviews = session.query(Review).filter_by(restaurant=self).all()
+        reviews = session.query(Reviews).filter_by(restaurant=self).all()
 
         if not reviews:
             return None
@@ -26,8 +26,17 @@ class Restaurant(Base):
         total_rating = sum(review.rating for review in reviews)
         average_rating = total_rating / len(reviews)
         return average_rating
-
-class Review(Base):
+    
+    def get_reviews(self, session):
+        return session.query(Reviews).filter_by(restaurant = self).all()
+    
+    def get_customers(self, session):
+        reviews = session.query(Reviews).filter_by(restaurant = self).all()
+        customers = set([review.customer for review in reviews])
+        return list(customers)
+    
+    
+class Reviews(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key=True)
@@ -47,4 +56,4 @@ engine = create_engine('sqlite:///reviews.db')
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-# You can now use the Session instance to manage your database sessions.
+
