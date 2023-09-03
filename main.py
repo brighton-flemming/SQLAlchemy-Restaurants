@@ -51,5 +51,14 @@ print("\nRestaurant Average Ratings:")
 for restaurant in session.query(Restaurant).all():
     print(f"Restaurant: {restaurant.name}, Average Rating: {restaurant.average_star_rating()}")
 
+print("\n Fanciest Restaurants:")
+fanciest_restaurant = Restaurant.fanciest(session)
+print(f"The fanciest restaurant is: {fanciest_restaurant.name}")
 
+reviews = restaurant.get_reviews(session)
+for review in reviews:
+    print(review)
 session.close()
+
+
+

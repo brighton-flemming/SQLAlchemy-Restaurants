@@ -41,7 +41,6 @@ class Restaurant(Base):
         return formatted_reviews
 
 
-
     def get_customers(self, session):
         reviews = session.query(Review).filter_by(restaurant = self).all()
         customers = set([review.customer for review in reviews])

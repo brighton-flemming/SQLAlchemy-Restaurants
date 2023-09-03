@@ -3,21 +3,23 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models.customer import Customer  
+from models.customer import Customer
+
 
 
 Base = declarative_base()
+
 
 class Review(Base):
     __tablename__ = 'reviews'
 
     id = Column(Integer, primary_key=True)
     customer_id = Column(Integer, ForeignKey('customer.id')) 
-    restaurant_name = Column(String)
+    restaurant_name = Column(String, ForeignKey('restaurant.id'))
     rating = Column(Integer)
 
     customer = relationship("Customer", back_populates="reviews")
-    restaurant = relationship("Restaurant") 
+    restaurant = relationship("Restaurant", back_populates="reviews") 
 
     def __init__(self, customer, restaurant_name, rating):
         self.customer = customer
@@ -33,6 +35,8 @@ class Review(Base):
 
     def get_restaurant(self):
         return self.restaurant
+    
+
     
 
 
