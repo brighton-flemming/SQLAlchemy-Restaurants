@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import Column, Integer, String, ForeignKey, func
+from sqlalchemy.orm import relationship, sessionmaker 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
+from models.restaurant import Restaurant 
 
 Base = declarative_base()
 
@@ -36,6 +37,21 @@ class Customer(Base):
     def get_restaurants(self):
         reviewed_restaurants = set(review.restaurant_name for review in self.reviews)
         return list(reviewed_restaurants)
+
+    def get_favourite_restaurant(self, session):
+        max_rating = func.max(Review.rating)
+        subquery = (
+            session.query(Review.restaurant_id, max_rating("max_rating"))
+            .filter(Review.customer_id == self.id)
+            .group_by(Review.restaurant_id)
+        ).subquery()
+        favourite_restaurant_id = (
+            session.query(subquery.c.restaurant_id)
+            .filter(subquery.c.max_rating == subquery.c.max_rating.max() )
+            .scalar()
+        )
+        favourite_restaurant = session.query(Restaurant).filter_by(id=favourite_restaurant_id).first()
+        return favourite_restaurant
     
 
     def get_reviews(self):
