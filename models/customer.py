@@ -33,9 +33,13 @@ class Customer(Base):
     def find_by_family_name(cls, session, family_name):
         return session.query(Customer).filter_by(family_name=family_name).first()
 
-    def restaurants(self):
+    def get_restaurants(self):
         reviewed_restaurants = set(review.restaurant_name for review in self.reviews)
         return list(reviewed_restaurants)
+    
+
+    def get_reviews(self):
+        return self.reviews
 
     def get_given_name(self):
         return self.first_name
@@ -45,6 +49,8 @@ class Customer(Base):
 
     def get_full_name(self):
         return f"{self.get_given_name()} {self.get_family_name()}"
+    
+
 
 class Review(Base):
     __tablename__ = 'reviews'
