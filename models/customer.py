@@ -19,9 +19,13 @@ class Customer(Base):
         self.first_name = first_name
         self.family_name = family_name
 
-    def add_review(self, restaurant_name, rating):
+    def add_review(self, session, restaurant_name, rating):
         review = Review(customer=self, restaurant_name=restaurant_name, rating=rating)
-        self.reviews.append(review)
+        session.append(review)
+
+    def delete_reviews(self, session, restaurant_name):
+        session.query(Review).filter_by(customer=self, restaurant_name = restaurant_name).delete()
+
 
     def num_reviews(self):
         return len(self.reviews)
@@ -52,7 +56,7 @@ class Customer(Base):
         )
         favourite_restaurant = session.query(Restaurant).filter_by(id=favourite_restaurant_id).first()
         return favourite_restaurant
-    
+
 
     def get_reviews(self):
         return self.reviews
@@ -65,8 +69,6 @@ class Customer(Base):
 
     def get_full_name(self):
         return f"{self.get_given_name()} {self.get_family_name()}"
-    
-
 
 class Review(Base):
     __tablename__ = 'reviews'

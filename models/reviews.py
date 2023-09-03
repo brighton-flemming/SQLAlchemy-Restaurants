@@ -24,6 +24,10 @@ class Review(Base):
         self.restaurant_name = restaurant_name
         self.rating = rating
 
+    def full_review(self):
+        return f"REview for {self.restaurant_name} by {self.customer.get_full_name()}: {self.rating} stars."
+
+
     def get_customer(self):
         return self.customer
 
@@ -39,6 +43,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 customer = session.query(Customer).filter_by(id=1).first()
 new_review = Review(customer=customer, restaurant_name='Pizza Place', rating=5)
+formatted_review = new_review.full_review()
+print(formatted_review)
 session.add(new_review)
 session.commit()
 
