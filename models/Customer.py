@@ -25,6 +25,38 @@ class Customer(Base):
 
     def add_review(self, restaurant_name, rating):
         review = Review(customer=self, restaurant_name=restaurant_name, rating=rating)
+        self.reviews.append(review)
+
+    def num_reviews(self):
+        return len(self.reviews)
+    
+    @classmethod
+    def find_by_name(cls, first_name):
+        session = Session()
+        customer = session.query(Customer).filter_by(first_name=first_name)
+        session.close()
+        return customer
+    
+    @classmethod
+    def find_by_family_name(cls, family_name):
+        session = Session()
+        customers = session.query(Customer).filter_by(family_name=family_name)
+        session.close()
+        return customers
+    
+    def restaurants(self):
+        reviewed_restaurants = set(review.restaurant_name for review in self.reviews)
+        return list(reviewed_restaurants)
+    
+    def get_given_name(self):
+        return self.first_name
+    
+    def get_family_name(self):
+        return self.family_name
+    
+    def get_full_name(self):
+        return f"{self.get_given_name()} {self.get_family_name()}"
+
 
 
 class Review(Base):
