@@ -6,6 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
 Base = declarative_base()
+engine = create_engine('sqlite:///reviews.db')
+Session = sessionmaker(bind=engine)
+session = Session()
 
 
 class Customer(Base):
@@ -34,10 +37,20 @@ class Customer(Base):
 
    
 
-    def add_review(self, session, restaurant_name, rating):
+    # def add_review(self, session, restaurant_name, rating):
         
-        review = Review(customer=self, restaurant_name=restaurant_name, rating=rating)
-        session.add(review)
+    #     review = Review(customer=self, restaurant_name=restaurant_name, rating=rating)
+    #     session.add(review)
+
+    def add_review(self, session: sessionmaker, restaurant_name: str, rating: int):
+        restaurant = session.query(Restaurant).filter_by(name=restaurant_name).first()
+
+        if restaurant:
+            review = Review(customer_id=self.id, restaurant_id=restaurant.id, rating=rating)
+            session.add(review)
+            session.commit()
+        else:
+            print(f"Restaurant '{restaurant_name}' not found.")
 
     def delete_reviews(self, session, restaurant_name):
         session.query(Review).filter_by(customer=self, restaurant_name = restaurant_name).delete()
@@ -110,7 +123,7 @@ class Review(Base):
     
     def __str__(self):
         customer_name = self.customer.get_full_name()
-        restaurant_name = self.restaurant.name
+        restaurant_name = self.restaurant_name
         return f"Review for {restaurant_name} by {customer_name}: {self.rating} stars"
 
 
@@ -138,8 +151,8 @@ class Restaurant(Base):
     def fanciest(cls, session):
         return session.query(cls).order_by(cls.price.desc()).first()  
 
-    def average_star_rating(self, session):
-        reviews = session.query(Review).filter_by(restaurant=self).all()
+    def average_star_rating(self):
+        reviews = self.session.query(Review).filter_by(restaurant=self).all()
 
         if not reviews:
             return None
@@ -164,22 +177,18 @@ class Restaurant(Base):
     
     
 
-engine = create_engine('sqlite:///reviews.db')
 
-Session = sessionmaker(bind=engine)
-
-session = Session()
-customer = session.query(Customer).filter_by(id=1).first()
-# new_review = Review(customer=customer, restaurant_name='Pizza Place', rating=5)
+customer = session.query(Customer).filter_by(id=3).first()
+new_review = Review(customer=customer, restaurant_name='Krusty Krab', rating=4)
 # formatted_review = new_review.full_review()
-# print(formatted_review)
-# session.add(new_review)
+print(new_review)
+session.add(new_review)
 session.commit()
 
 all_reviews = session.query(Review).all()
 
 for review in all_reviews:
-    print(f"Customer ID: {review.customer}, Restaurant: {review.restaurant_name}, Rating: {review.rating}")
+    print(f"Customer ID: {review.customer_id}, Restaurant: {review.restaurant_name}, Rating: {review.rating}")
 
 session.close()
 

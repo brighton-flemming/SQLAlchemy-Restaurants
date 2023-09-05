@@ -11,8 +11,15 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 Base = declarative_base()
+engine = create_engine('sqlite:///reviews.db')
+Base.metadata.create_all(bind=engine)
 
+Customer.metadata.create_all(engine)
+Review.metadata.create_all(engine)
+Restaurant.metadata.create_all(engine)
 
+Session = sessionmaker(bind=engine)
+session = Session()
 
 
 customer1 = Customer(
@@ -36,24 +43,10 @@ customer4 = Customer(
 
 
 
-
-engine = create_engine('sqlite:///reviews.db')
-Base.metadata.create_all(bind=engine)
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-
-Customer.metadata.create_all(engine)
-Review.metadata.create_all(engine)
-Restaurant.metadata.create_all(engine)
-
-
-
-restaurant1 = Restaurant(name = 'Pizza Place', price=17.50)
-restaurant2 = Restaurant(name = 'Burger Joint', price=25.00)
-restaurant3 = Restaurant(name = 'Krusty Krab', price=37.00)
-restaurant4 = Restaurant(name = 'Chum Bucket', price=14.00)
+restaurant1 = Restaurant(name = 'Pizza Place', price=1750)
+restaurant2 = Restaurant(name = 'Burger Joint', price=2500)
+restaurant3 = Restaurant(name = 'Krusty Krab', price=3700)
+restaurant4 = Restaurant(name = 'Chum Bucket', price=1400)
 
 
 customer1.add_review(session=session, restaurant_name=restaurant3.name, rating=5)
@@ -73,9 +66,13 @@ print("Customers:")
 for customer in session.query(Customer).all():
     print(f"{customer.get_full_name()}")
 
+# print("\nReviews:")
+# for review in session.query(Review).all():
+#     print(f"Customer: {review.customer.get_full_name()}, Restaurant: {review.restaurant.name}, Rating: {review.rating}")
+
 print("\nReviews:")
 for review in session.query(Review).all():
-    print(f"Customer: {review.customer.get_full_name()}, Restaurant: {review.restaurant.name}, Rating: {review.rating}")
+    print(review)
 
 print("\nRestaurant Average Ratings:")
 for restaurant in session.query(Restaurant).all():
@@ -85,27 +82,27 @@ print("\n Fanciest Restaurants:")
 fanciest_restaurant = Restaurant.fanciest(session)
 print(f"The fanciest restaurant is: {fanciest_restaurant.name}")
 
-# reviews = restaurant.get_reviews(session)
-# for review in reviews:
-#     print(review)
-# session.close()
+reviews = restaurant.get_reviews(session)
+for review in reviews:
+    print(review)
+session.close()
 
-# engine = create_engine('sqlite:///reviews.db')
-# Base.metadata.create_all(engine)
-# Session = sessionmaker(bind=engine)
+engine = create_engine('sqlite:///reviews.db')
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
 
-# session = Session()
-# customer = session.query(Customer).filter_by(id=1).first()
-# new_review = Review(customer=customer, restaurant_name='Pizza Place', rating=5)
+customer = session.query(Customer).filter_by(id=1).first()
+new_review = Review(customer=customer, restaurant_name='Pizza Place', rating=5)
 # formatted_review = new_review.full_review()
-# print(formatted_review)
-# session.add(new_review)
-# session.commit()
+print(new_review)
+session.add(new_review)
+session.commit()
 
-# all_reviews = session.query(Review).all()
+all_reviews = session.query(Review).all()
 
-# for review in all_reviews:
-#     print(f"Customer ID: {review.customer}, Restaurant: {review.restaurant_name}, Rating: {review.rating}")
+for review in all_reviews:
+    print(f"Customer ID: {review.customer_id}, Restaurant: {review.restaurant_name}, Rating: {review.rating}")
 
 session.close()
 
